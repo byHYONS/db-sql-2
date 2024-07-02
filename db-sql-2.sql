@@ -72,23 +72,49 @@ SELECT
 FROM
     `courses`
 INNER JOIN `course_teacher` ON `courses`.`id` = `course_teacher`.`course_id`
-INNER JOIN `teachers`
-ON
-    `teachers`.`id` = `course_teacher`.`course_id`
+INNER JOIN `teachers` ON `teachers`.`id` = `course_teacher`.`course_id`
 WHERE
     `teachers`.`surname` = 'amato' AND `teachers`.`name` = 'fulvio';
 
 -- 4. Selezionare tutti gli studenti con i dati relativi al corso di laurea a cui sono iscritti e il relativo dipartimento, in ordine alfabetico per cognome e nome:
 
-
+SELECT
+    `students`.`name` AS `nome`,
+    `students`.`surname` AS `cognome`,
+    `degrees`.`name` AS `corso_di_laurea`,
+    `departments`.`name` AS `dipartimento`
+FROM
+    `departments`
+INNER JOIN `degrees` ON `departments`.`id` = `degrees`.`department_id`
+INNER JOIN `students` ON `degrees`.`id` = `students`.`degree_id`
+ORDER BY
+    `students`.`name` AND `students`.`surname`;
 
 -- 5. Selezionare tutti i corsi di laurea con i relativi corsi e insegnanti:
 
-
+SELECT
+    `degrees`.`name` AS `corso_di_laurea`,
+    `courses`.`name` AS `materia`,
+    `teachers`.`name` AS `name`,
+    `teachers`.`surname` AS `cognome`
+FROM
+    `degrees`
+INNER JOIN `courses` ON `degrees`.`id` = `courses`.`degree_id`
+INNER JOIN `course_teacher` ON `courses`.`id` = `course_teacher`.`course_id`
+INNER JOIN `teachers` ON `courses`.`id` = `course_teacher`.`course_id`;
 
 -- 6. Selezionare tutti i docenti che insegnano nel Dipartimento di Matematica (54):
 
-
+SELECT
+    COUNT(DISTINCT `teachers`.`id`) AS `insegnanti_nel_dipartimento_di_matematica`
+FROM
+    `departments`
+INNER JOIN `degrees` ON `departments`.`id` = `degrees`.`department_id`
+INNER JOIN `courses` ON `degrees`.`id` = `courses`.`degree_id`
+INNER JOIN `course_teacher` ON `courses`.`id` = `course_teacher`.`course_id`
+INNER JOIN `teachers` ON `course_teacher`.`teacher_id` = `teachers`.`id`
+WHERE
+    `departments`.`name` = 'Dipartimento di Matematica';
 
 -- 7. BONUS: Selezionare per ogni studente il numero di tentativi sostenuti per ogni esame, stampando anche il voto massimo. Successivamente, filtrare i tentativi con voto minimo 18:
 
