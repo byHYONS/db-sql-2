@@ -1,21 +1,46 @@
 -- GROUP BY:
 -- 1. Contare quanti iscritti ci sono stati ogni anno:
 
-SELECT COUNT(`id`) AS `numero_iscritti`, YEAR(`enrolment_date`) AS `per_anno`
-FROM `students`
-GROUP BY `per_anno`;
+SELECT
+    COUNT(`id`) AS `numero_iscritti`,
+    YEAR(`enrolment_date`) AS `per_anno`
+FROM
+    `students`
+GROUP BY
+    `per_anno`;
 
 -- 2. Contare gli insegnanti che hanno l'ufficio nello stesso edificio:
 
-
+SELECT
+    COUNT(`id`) AS `numero_insegnanti`,
+    `office_address` AS `stesso_indirizzo`
+FROM
+    `teachers`
+GROUP BY
+    `stesso_indirizzo`;
 
 -- 3. Calcolare la media dei voti di ogni appello d'esame:
 
-
+SELECT
+    AVG(`vote`) AS `media_voto`,
+    `exam_id` AS `appello`
+FROM
+    `exam_student`
+GROUP BY
+    `appello`
+ORDER BY
+    `media_voto`
+DESC;
 
 -- 4. Contare quanti corsi di laurea ci sono per ogni dipartimento:
 
-
+SELECT
+    COUNT(`id`) AS `corrsi_di_laurea`,
+    `department_id` AS `dipartimento`
+FROM
+    `degrees`
+GROUP BY
+    `dipartimento`;
 
 -- JOIN:
 -- 1. Selezionare tutti gli studenti iscritti al Corso di Laurea in Economia:
