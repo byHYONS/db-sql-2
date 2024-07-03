@@ -22,7 +22,7 @@ GROUP BY
 -- 3. Calcolare la media dei voti di ogni appello d'esame:
 
 SELECT
-    AVG(`vote`) AS `media_voto`,
+    ROUND(AVG(`vote`),2) AS `media_voto`,
     `exam_id` AS `appello`
 FROM
     `exam_student`
@@ -46,7 +46,7 @@ GROUP BY
 -- 1. Selezionare tutti gli studenti iscritti al Corso di Laurea in Economia:
 
 SELECT
-    *
+    `students`.*
 FROM
     `degrees`
 INNER JOIN `students` ON `degrees`.`id` = `students`.`degree_id`
@@ -63,16 +63,19 @@ FROM
     `departments`
 INNER JOIN `degrees` ON `departments`.`id` = `degrees`.`department_id`
 WHERE
-    `departments`.`name` LIKE '%neuroscienze';
+    `departments`.`name` LIKE '%neuroscienze' AND `degrees`.`level` = 'magistrale';
+
 
 -- 3. Selezionare tutti i corsi in cui insegna Fulvio Amato (id=44):
 
 SELECT
-    *
+    `courses`.`name` AS `materia`,
+    `teachers`.`name` AS `name`,
+    `teachers`.`surname` AS `cognome`
 FROM
     `courses`
 INNER JOIN `course_teacher` ON `courses`.`id` = `course_teacher`.`course_id`
-INNER JOIN `teachers` ON `teachers`.`id` = `course_teacher`.`course_id`
+INNER JOIN `teachers` ON `teachers`.`id` = `course_teacher`.`teacher_id`
 WHERE
     `teachers`.`surname` = 'amato' AND `teachers`.`name` = 'fulvio';
 
@@ -88,7 +91,8 @@ FROM
 INNER JOIN `degrees` ON `departments`.`id` = `degrees`.`department_id`
 INNER JOIN `students` ON `degrees`.`id` = `students`.`degree_id`
 ORDER BY
-    `students`.`name` AND `students`.`surname`;
+    `students`.`name`,
+    `students`.`surname`;
 
 -- 5. Selezionare tutti i corsi di laurea con i relativi corsi e insegnanti:
 
@@ -120,22 +124,23 @@ WHERE
 
 SELECT
     `students`.`id` AS `studente`,
-    `students`.`name`,
-    `students`.`surname`,
-    `exam_student`.`exam_id`,
-    COUNT(`exam_student`.`exam_id`) AS `numero_di_tentativi`,
-    MAX(`exam_student`.`vote`) AS `voto_massimo`
+    `students`.`name` AS `nome`,
+    `students`.`surname` AS `cognome`,
+    COUNT(`exam_student`.`vote`) AS `numero_di_tentativi`,
+    MAX(`exam_student`.`vote`) AS `voto_massimo`,
+    MIN(`exam_student`.`vote`) AS `voto_minimo`
 FROM
     `students`
-JOIN `exam_student` ON `students`.`id` = `exam_student`.`student_id`
-JOIN `exams` ON `exam_student`.`exam_id` = `exams`.`id`
-GROUP BY 
-    `students`.`id`, 
-    `exam_student`.`exam_id`
-HAVING 
-    MAX(`exam_student`.`vote`) >= 18
+INNER JOIN `exam_student` ON `students`.`id` = `exam_student`.`student_id`
+INNER JOIN `exams` ON `exam_student`.`exam_id` = `exams`.`id`
+GROUP BY
+    `students`.`id`,
+    `exams`.`course_id`
+HAVING
+    `voto_massimo` > 18
 ORDER BY
-    `exam_student`.`vote`;
+    `students`.`name`,
+    `students`.`surname`;
   
 
 -- FINE
